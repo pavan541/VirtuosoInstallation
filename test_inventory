@@ -1,0 +1,12 @@
+[webservers]
+172.17.0.2
+
+[dbservers]
+172.17.0.2
+
+[virtuoso]
+172.17.0.2
+
+[mediawiki]
+172.17.0.2
+

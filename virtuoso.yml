@@ -1,0 +1,8 @@
+---
+
+- name: set up virtuoso
+  hosts: virtuoso
+  sudo: yes
+  roles:
+    - virtuoso
+

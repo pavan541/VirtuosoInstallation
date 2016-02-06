@@ -1,0 +1,41 @@
+---
+
+- name: update apt cache 
+  apt: update_cache=yes
+
+- name: installing dpkg and build essential
+  apt: name={{ item }} state=latest
+  with_items:
+    - dpkg-dev
+    - build-essential
+
+- name: install virtuoso and modules
+  apt: name={{ item }} state=latest
+  with_items:
+    - autoconf
+    - automake
+    - libtool
+    - flex
+    - bison
+    - gperf
+    - gawk
+    - m4
+    - make 
+    - odbcinst
+    - libxml2-dev
+
+- name: Download and  unarchive a virtuoso file
+  unarchive: src=/tmp/virtuoso-opensource-7.2.1.tar.gz dest=/usr/local/bin copy=no
+   
+- name: executing the necessary shell commands
+  shell: "{{ item }}"
+  with_items:
+    - cd /usr/local/bin/virtuoso-opensource-7.2.1
+    - sudo ./configure --prefix=/usr/local/
+    - sudo ./configure --program-transform-name="s/isql/isql-v/"
+    - sudo nice make
+    - sudo nice make check
+    - sudo make install
+
+
+  

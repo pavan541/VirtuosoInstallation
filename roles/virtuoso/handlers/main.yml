@@ -1,0 +1,6 @@
+---
+
+- name: restart virtuoso
+  shell: /usr/local/virtuoso-opensource-{{ virtuoso_version }}/bin/virtuoso-t -fd &
+  args: 
+    chdir: /usr/local/virtuoso-opensource-{{ virtuoso_version }}/var/lib/virtuoso/db/

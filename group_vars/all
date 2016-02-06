@@ -1,0 +1,7 @@
+---
+
+virtuoso_url: http://downloads.sourceforge.net/project/virtuoso/virtuoso/7.2.1/virtuoso-opensource-7.2.1.tar.gz?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Fvirtuoso%2Ffiles%2F&ts=1447431471&use_mirror=skylineservers
+
+virtuoso_version: '7.2.1'
+virtuoso_home: '/usr/local/'
+virtuoso_dir: '{{ virtuoso_home }}/virtuoso-opensource-{{ virtuoso_version }}' 

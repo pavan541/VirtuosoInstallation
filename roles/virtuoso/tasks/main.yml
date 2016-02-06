@@ -1,0 +1,79 @@
+---
+
+#- name: update apt cache 
+#  apt: update_cache=yes
+
+- name: Create System group for virtuso
+  group: name=virtuoso system=yes state=present
+
+- name: Create system user for virtuoso
+  user: name=virtuoso createhome=no home=/var/lib/virtuoso-opensource-7.2.1/ group=virtuoso system=yes state=present
+
+- name: Create virtuoso data directory
+  file: path=/var/lib/virtuoso-opensource-{{ virtuoso_version }} state=directory  owner=virtuoso group=virtuoso mode=0755
+
+- name: Remove default virtuoso configuration files and scripts
+  file: name={{ item }} state=absent
+  with_items:
+    - /etc/virtuoso-opensource-6.1/virtuoso.ini
+    - /etc/init.d/virtuoso-opensource-6.1
+
+- name: installing dpkg and build essential
+  apt: name={{ item }} state=latest
+  with_items:
+    - dpkg-dev
+    - build-essential
+    - autoconf
+    - automake
+    - libtool
+    - flex
+    - bison
+    - gperf
+    - gawk
+    - m4
+    - make 
+    - odbcinst
+    - libxml2-dev
+    - libssl-dev
+    - libreadline-dev
+
+- name: Download virtuso from the URL
+  get_url: url={{ virtuoso_url }} dest=/tmp/virtuoso-opensource-{{ virtuoso_version }}.tar.gz sha256sum='8e680173f975266046cdc33b0949c6c3320b82630288aed778524657a32ee094'
+
+- name: Extract Virtuoso
+  unarchive: src=/tmp/virtuoso-opensource-{{ virtuoso_version }}.tar.gz dest=/tmp/ copy=no
+
+- name: Build virtuoso
+  shell: "{{ item }}"
+  args:
+    chdir: /tmp/virtuoso-opensource-{{ virtuoso_version }}
+  with_items:
+   - ./configure --prefix=/usr/local/virtuoso-opensource-{{ virtuoso_version }}/ \--with-readline --program-transform-name="s/isql/isql-v/"
+   - nice -n-20 make -j{{ ansible_processor_vcpus }}
+   - nice -n-20 make install
+
+- name: Generate settings from template
+  template: src=virtuoso.ini.j2 dest=/usr/local/virtuoso-opensource-{{ virtuoso_version }}/var/lib/virtuoso/db/virtuoso.ini mode=0644
+  notify: restart virtuoso
+
+- name:  Ensure correct ownership of virtuoso directories  (check)
+  file: path=/usr/local/virtuoso-opensource-{{ virtuoso_version }}/ state=directory owner=virtuoso group=virtuoso recurse=yes
+
+
+- name: Create directory for datasets to which virtuoso will have access
+  file: dest=/usr/local/virtuoso-opensource-{{ virtuoso_version }}/datasets state=directory owner=virtuoso group=virtuoso mode=0755
+
+# start on boot
+- name: Create virtuoso runit directory
+  file: path=/etc/sv/virtuoso owner=root group=root mode=0755 state=directory
+
+- name: Copy virtuoso run script to /etc/sv
+  copy: src=run dest=/etc/sv/virtuoso owner=root group=root mode=0755
+  notify: restart virtuoso
+
+- name: Link virtuoso to /etc/service
+  file: src=/etc/sv/virtuoso path=/etc/service/virtuoso state=link
+
+- name: Create virtuoso link in init.d
+  file: src=/usr/bin/sv path=/etc/init.d/virtuoso state=link
+

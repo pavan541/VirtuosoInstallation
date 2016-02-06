@@ -1,0 +1,37 @@
+#!/bin/sh
+#
+# Example init.d script with LSB support.
+#
+# Please read this init.d carefully and modify the sections to
+# adjust it to the program you want to run.
+#
+# Copyright (c) 2007 Javier Fernandez-Sanguino <jfs@debian.org>
+#
+# This is free software; you may redistribute it and/or modify
+# it under the terms of the GNU General Public License as
+# published by the Free Software Foundation; either version 2,
+# or (at your option) any later version.
+#
+# This is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License with
+# the Debian operating system, in /usr/share/common-licenses/GPL;  if
+# not, write to the Free Software Foundation, Inc., 59 Temple Place,
+# Suite 330, Boston, MA 02111-1307 USA
+#
+
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+DAEMON=/usr/local/virtuoso-opensource-7.2.1/var/lib/virtuoso/db/virtuoso-t 
+NAME=virtuoso-opensource-7.2.1
+SHORTNAME=virtuoso
+DESC="Virtuoso OpenSource Edition 7.1.2"
+DBPATH=/usr/local/virtuoso-opensource-7.2.1/var/lib/virtuoso/db
+LOGDIR=/var/log/virtuoso-opensource-6.1  # Log directory to use
+
+exec 2>&1
+cd $DBPATH
+exec sudo -uvirtuoso $DAEMON +foreground +configfile $DBPATH/$SHORTNAME.ini

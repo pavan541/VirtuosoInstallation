@@ -1,0 +1,4 @@
+---
+
+- name: Install openjdk-7-jre-headless
+  apt: name=openjdk-7-jre-headless state=latest update_cache=yes

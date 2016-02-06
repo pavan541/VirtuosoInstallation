@@ -1,0 +1,2 @@
+[virtuoso]
+localhost    ansible_connection=local
